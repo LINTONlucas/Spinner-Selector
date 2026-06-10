@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 World Cup Winner Selector</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    font-size: 22px;
+   background-image: url('https://wallpapercave.com/wp/wp15010584.webp');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+color: rgb(221, 190, 190);
+min-height: 90vh;
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 80px;
+    align-items: flex-start;
+    gap: 60px;
+    margin-top: 20px;
+  }
+
+  .left-panel {
+    width: 320px;
+    text-align: center;
+  }
+
+  .right-panel {
+    text-align: center;
+  }
+
+  textarea {
+    width: 250px;
+    height: 300px;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 10px;
+    color: white;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.25s ease;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  button:active {
+    transform: scale(0.96);
+  }
+
+  button:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .load-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  }
+
+  .spin-btn {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+  }
+
+  #wheelCanvas {
+    transition: transform 4s ease-out;
+  }
+
+  #result {
+    font-size: 45px;
+    font-weight: bold;
+    margin-top: 50px;
+    padding: 20px;
+    color: rgb(199, 163, 163);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>2026 World Cup Winner Selector</h1>
+
+<div class="container">
+
+  <div class="left-panel">
+    <p>Enter Names:</p>
+
+    <textarea id="names"></textarea><br>
+
+    <button class="load-btn" onclick="loadWheel()">Load Names</button>
+    <button class="reset-btn" onclick="resetWheel()">Reset</button>
+  </div>
+
+  <div class="right-panel">
+    <canvas id="wheelCanvas" width="500" height="500"></canvas><br>
+
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()" disabled>
+      Spin
+    </button>
+
+    <div id="result">🏆 WINNER: -</div>
+</div>
+
+
+<script>
+let tickets = [];
+let originalTickets = [];
+let currentRotation = 0;
+
+const canvas = document.getElementById("wheelCanvas");
+const ctx = canvas.getContext("2d");
+const spinBtn = document.getElementById("spinBtn");
+
+function parseTickets() {
+    const lines = document.getElementById("names").value.trim().split("\n");
+    tickets = [];
+
+    lines.forEach(line => {
+        const [name, weightText] = line.split(",").map(x => x.trim());
+        const weight = Math.max(1, parseInt(weightText || "1"));
+
+        for (let i = 0; i < weight; i++) {
+            tickets.push(name);
+        }
+    });
+
+    shuffle(tickets);
+    originalTickets = [...tickets];
+}
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+function drawWheel() {
+    ctx.clearRect(0, 0, 500, 500);
+
+    if (!tickets.length) return;
+
+    const angle = (2 * Math.PI) / tickets.length;
+
+    tickets.forEach((name, i) => {
+        ctx.beginPath();
+        ctx.moveTo(250, 250);
+        ctx.arc(250, 250, 220, i * angle, (i + 1) * angle);
+
+        ctx.fillStyle = `hsl(${i * 360 / tickets.length}, 70%, 70%)`;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(250, 250);
+        ctx.rotate(i * angle + angle / 2);
+
+        ctx.fillStyle = "black";
+        ctx.font = "18px Arial";
+        ctx.fillText(name, 120, 5);
+
+        ctx.restore();
+    });
+}
+
+function loadWheel() {
+    parseTickets();
+    drawWheel();
+
+    currentRotation = 0;
+    canvas.style.transform = "rotate(0deg)";
+
+    document.getElementById("result").innerText = "🏆 SELECTED: -";
+    spinBtn.disabled = false;
+}
+
+function spinWheel() {
+    if (!tickets.length) {
+        alert("All names selected!");
+        spinBtn.disabled = true;
+        return;
+    }
+
+    spinBtn.disabled = true;
+
+    const selected = tickets.shift();
+
+    currentRotation += 1800;
+
+    playTick();
+
+    canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+    setTimeout(() => {
+        document.getElementById("result").innerText =
+            "🏆 SELECTED: " + selected + " 🎉";
+
+        drawWheel();
+
+        if (tickets.length > 0) {
+            spinBtn.disabled = false;
+        }
+    }, 4000);
+}
+
+function resetWheel() {
+    tickets = [...originalTickets];
+    shuffle(tickets);
+
+    drawWheel();
+
+    currentRotation = 0;
+    canvas.style.transform = "rotate(0deg)";
+
+    document.getElementById("result").innerText = "🏆 SELECTED: -";
+    spinBtn.disabled = false;
+}
+
+function playTick() {
+    const audio = new AudioContext();
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+
+    osc.connect(gain);
+    gain.connect(audio.destination);
+
+    osc.frequency.value = 800;
+    gain.gain.value = 0.1;
+
+    osc.start();
+    osc.stop(audio.currentTime + 0.08);
+}
+
+document.addEventListener("keydown", function(event) {
+
+    // if SPACEBAR pressed
+    if (event.code === "Space") {
+
+        // stop page scrolling
+        event.preventDefault();
+
+        // only spin if button enabled
+        if (!spinBtn.disabled) {
+            spinWheel();
+        }
+    }
+});
+</script>
+
+</body>
+</html>
