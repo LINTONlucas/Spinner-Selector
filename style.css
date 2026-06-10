@@ -1,0 +1,91 @@
+ body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    font-size: 22px;
+   background-image: url('https://wallpapercave.com/wp/wp15010584.webp');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+color: rgb(221, 190, 190);
+min-height: 90vh;
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 80px;
+    align-items: flex-start;
+    gap: 60px;
+    margin-top: 20px;
+  }
+
+  .left-panel {
+    width: 320px;
+    text-align: center;
+  }
+
+  .right-panel {
+    text-align: center;
+  }
+
+  textarea {
+    width: 250px;
+    height: 300px;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 10px;
+    color: white;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.25s ease;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  button:active {
+    transform: scale(0.96);
+  }
+
+  button:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .load-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  }
+
+  .spin-btn {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+  }
+
+  .reset-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+  }
+
+  #wheelCanvas {
+    transition: transform 4s ease-out;
+  }
+
+  #result {
+    font-size: 45px;
+    font-weight: bold;
+    margin-top: 50px;
+    padding: 20px;
+    color: rgb(199, 163, 163);
+    text-align: center;
+  }
